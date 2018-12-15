@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+
+  node_exporter:
+    image: prom/node-exporter:v0.17.0
+    container_name: node_exporter
+    user: root
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    ports:
+      - 9100:9100
+    labels:
+      SERVICE_TAGS: ddt-pt-api
+
+  cadvisor:
+    image: google/cadvisor:v0.32.0
+    container_name: cadvisor
+    privileged: true
+    network_mode: host
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /cgroup:/cgroup:ro
+    command: --listen_ip="0.0.0.0" --port=18880
+    restart: unless-stopped
+    ports:
+      - 18880:18880
+    labels:
+      SERVICE_TAGS: ddt-pt-api
+
+  registrator:
+    container_name: registrator
+    image: marksugar/registrator:v7.1
+#    image: gliderlabs/registrator:v7
+    network_mode: "host"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+#    command: "-internal=false -ip=172.25.250.247 consul://172.25.250.249:8500"
+    depends_on:
+    - cadvisor
+    - node_exporter
+    environment:
+    - REGISTRATOR_BIND_INTERFACE=eth0
+    - NETWORK_DEVIDE=eth0 
+    - NDIPSERVER_IP=172.25.250.249
+    - ND_CMD=-internal=false -retry-interval=30 -resync=180
+    labels:
+      SERVICE_TAGS: ddt-pt-api
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1G"
