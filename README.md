@@ -5,7 +5,7 @@ pcr组合了prometheus consul registrator，为了使用起来可以快速部署
 ![1210.png](https://github.com/marksugar/pcr/blob/master/node_template/1210.png?raw=true)
 
 - [使用说明](#使用说明)
-  - [node 节点部署](#node 节点部署)
+  - [node节点部署](#node节点部署)
   - [registrator须知](#registrator须知)
   - [prometheus须知](#prometheus须知)
   - [grafana须知](#grafana须知)
