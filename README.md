@@ -2,6 +2,14 @@
 
 pcr组合了prometheus consul registrator，为了使用起来可以快速部署，使用compose将他们编排在一起使用
 
+![1210.png](https://github.com/marksugar/pcr/blob/master/node_template/1210.png?raw=true)
+
+- [使用说明](#使用说明)
+  - [node 节点部署](#node 节点部署)
+  - [registrator须知](#registrator须知)
+  - [prometheus须知](#prometheus须知)
+  - [grafana须知](#grafana须知)
+
 ## 使用说明
 
 ```
@@ -52,7 +60,7 @@ sed -i '/-A INPUT -j REJECT/i\\-A INPUT -p tcp -m tcp -m state --state NEW -m mu
 docker-compose -f /opt/docker-compose.yaml up -d
 ```
 
-## 须知
+## registrator须知
 
  在registrator镜像中，marksugar/registrator:v7.1是我自己基于gliderlabs/registrator:v7封装
 
@@ -83,7 +91,7 @@ exec "$@"
 
 `-retry-interval=30`会在三分钟后自动重新联系CONSUL_SERVER
 
-## prometheus
+## prometheus须知
 
 镜像是prom/prometheus:v2.5.0，数据存储45天，配置文件映射到/etc/prometheus/prometheus.yml
 
@@ -96,7 +104,7 @@ exec "$@"
       - '--web.enable-lifecycle'
 ```
 
-## grafana
+## grafana须知
 
 ```
       - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
@@ -104,3 +112,9 @@ exec "$@"
       - GF_USERS_ALLOW_SIGN_UP=false
 ```
 
+最终展示如下：
+
+![1217.png](https://github.com/marksugar/pcr/blob/master/node_template/1217.png?raw=true)
+
+
+![1218.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/1218.png)
