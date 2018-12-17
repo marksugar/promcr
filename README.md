@@ -14,6 +14,18 @@ pcr组合了prometheus consul registrator，为了使用起来可以快速部署
   - [alert.rules](#alert_rules)
   - [alertmanager](#alertmanager)
 
+版本说明
+
+| Version                    | type          | User ID |
+| -------------------------- | ------------- | ------- |
+| 5.4.1                      | grafana       | 472     |
+| v0.15.3                    | alertmanager  |         |
+| v2.5.0                     | prometheus    | 665534  |
+| v0.16.0                    | node_exporter |         |
+| v0.32.0                    | cadvisor      |         |
+| 1.4.0                      | consul        |         |
+| marksugar/registrator:v7.1 | registrator   |         |
+
 ## 使用说明
 
 ```
