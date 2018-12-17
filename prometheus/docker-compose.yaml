@@ -1,0 +1,151 @@
+version: '3'
+#volumes:
+#  grafana_data: {}
+services:
+  prometheus:
+    image: prom/prometheus:v2.5.0
+    container_name: prometheus
+    restart: always
+    privileged: true
+    network_mode: "host"
+    command: 
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=45d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    volumes:
+    - ./data:/prometheus:rw  # NOTE: chown 65534:65534 /data/prometheus/
+#    - /usr/share/prometheus/console_libraries:/usr/share/prometheus/console_libraries
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    - ./alert.rules:/etc/prometheus/alert.rules
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1G"
+    depends_on:
+    - consul
+    labels:
+      SERVICE_TAGS: prometheus
+  grafana:
+    image: grafana/grafana:5.4.1
+    container_name: grafana
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - ./grafana_data:/var/lib/grafana #NOTE chown 472.472 /data/grafana_data/
+      - ./grafana/datasources:/etc/grafana/datasources
+      - ./grafana/dashboards:/etc/grafana/dashboards
+#      - /data/grafana/setup.sh:/setup.sh
+#    entrypoint: /setup.sh
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    depends_on:
+    - prometheus
+    labels:
+      SERVICE_TAGS: prometheus
+
+  alertmanager:
+    image: prom/alertmanager:v0.15.3
+    container_name: alertmanager
+    network_mode: "host"
+    volumes:
+      - ./alertmanager/:/etc/alertmanager/
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    restart: unless-stopped
+    expose:
+      - 9093
+    labels:
+      SERVICE_TAGS: prometheus
+
+  node_exporter:
+    image: prom/node-exporter:v0.16.0
+    container_name: node_exporter
+    user: root
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    ports:
+      - 9100:9100
+    labels:
+      - "SERVICE_TAGS=prometheus"
+
+  cadvisor:
+    image: google/cadvisor:v0.32.0
+    container_name: cadvisor
+    network_mode: "host"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    command: --listen_ip="0.0.0.0" --port=18880
+    restart: unless-stopped
+    ports:
+      - 18880:18880
+    labels:
+      SERVICE_TAGS: prometheus
+
+  consul:
+    container_name: consul
+    image: consul:1.4.0
+    network_mode: "host"
+    ports:
+      - 8500:8500
+#    command: "agent  -bootstrap -bind=172.25.250.249 -server -data-dir=/tmp/consul"
+#    command: "agent -server -ui -client=0.0.0.0 -dev -node=node0 -bind '{{ GetInterfaceIP \"eth0\" }}' -bootstrap-expect=1 -data-dir=/tmp/consul"
+    command: "agent -server -ui -client=0.0.0.0 -dev -node=node0 -bind '{{ GetInterfaceIP \"eth0\" }}' -bootstrap-expect=1 -data-dir=/tmp/consul"
+    labels:
+      SERVICE_IGNORE: 'true'
+    environment:
+    - CONSUL_CLIENT_INTERFACE=eth0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1G"
+    volumes:
+      - ./consul/config:/consul/config
+      - ./consul/data:/consul/data
+    labels:
+      SERVICE_TAGS: prometheus
+  registrator:
+    container_name: registrator
+#    image: gliderlabs/registrator:v7
+    image: marksugar/registrator:v7.1
+    network_mode: "host"
+    depends_on:
+      - consul
+      - cadvisor
+      - node_exporter
+      - alertmanager
+      - grafana
+      - prometheus
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+#    command: -internal -ip=172.25.250.249 consul://172.25.250.249:8500
+#    command: "-internal=false -ip=172.25.250.249 consul://172.25.250.249:8500"
+    environment:
+    - REGISTRATOR_BIND_INTERFACE=eth0
+    - NETWORK_DEVIDE=eth0 
+    - NDIPSERVER_IP=172.25.250.249
+    - ND_CMD=-internal=false -retry-interval=60 -resync=360
+    labels:
+      SERVICE_TAGS: prometheus
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1G"  

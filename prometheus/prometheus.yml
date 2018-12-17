@@ -1,0 +1,70 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - '172.25.250.249:9093'
+rule_files:
+  - "alert.rules"
+scrape_configs:
+  - job_name: prometheus
+    scrape_interval: 30s
+    static_configs:
+    - targets: ['127.0.0.1:9090']
+    - targets: ['127.0.0.1:9093']
+    - targets: ['127.0.0.1:8300']
+
+  - job_name: 'cadvisor'
+    metrics_path: /metrics
+    scheme: http
+    consul_sd_configs:
+      - server: 127.0.0.1:8500
+        services: ['cadvisor']
+    relabel_configs:
+        - source_labels: ['__meta_consul_service']
+          regex:         '(.*)'
+          target_label:  'job'
+          replacement:   '$1'
+        - source_labels: [__meta_consul_tags]
+          target_label: tags
+        - source_labels: ['__meta_consul_service_address']
+          regex:         '(.*)'
+          target_label:  'instance'
+          replacement:   '$1'
+        - source_labels: ['__meta_consul_service_address', '__meta_consul_service_port']
+          regex:         '(.*);(.*)'
+          target_label:  '__address__'
+          replacement:   '$1:$2'
+
+        - source_labels: ['__meta_consul_tags']
+          regex:         ',(dt-pt-api|ddt-pt-api|prometheus|ddt-mn-jdc|ddt-mn-app),'
+          target_label:  'group'
+          replacement:   '$1'
+  - job_name: 'node_exporter'
+    metrics_path: /metrics
+    scheme: http
+    consul_sd_configs:
+      - server: 127.0.0.1:8500
+        services: ['node-exporter']
+    relabel_configs:
+        - source_labels: ['__meta_consul_service']
+          regex:         '(.*)'
+          target_label:  'job'
+          replacement:   '$1'
+        - source_labels: ['__meta_consul_service_address']
+          regex:         '(.*)'
+          target_label:  'instance'
+          replacement:   '$1'
+        - source_labels: ['__meta_consul_service_address', '__meta_consul_service_port']
+          regex:         '(.*);(.*)'
+          target_label:  '__address__'
+          replacement:   '$1:$2'
+
+        - source_labels: ['__meta_consul_tags']
+          regex:         ',(dt-pt-api|ddt-pt-api|prometheus|ddt-mn-jdc|ddt-mn-app),'
+          target_label:  'group'
+          replacement:   '$1'

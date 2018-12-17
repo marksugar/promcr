@@ -1,0 +1,88 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets: 
+      - '172.25.250.249:9093'
+rule_files:
+scrape_configs:
+
+#  - job_name: 'prometheus'
+#    metrics_path: /metrics
+#    scheme: http
+#    static_configs:
+#    - targets: ['172.25.250.249:9090']
+
+  - job_name: 'consul_sd'
+    metrics_path: /metrics
+    scheme: http
+    consul_sd_configs:
+      - server: 127.0.0.1:8500
+        services:
+          - node_exporter
+          - cadvisor
+          - registrator
+    relabel_configs:
+        - source_labels: ['__meta_consul_service']
+          regex:         '(.*)'
+          target_label:  'job'
+          replacement:   '$1'
+        - source_labels: ['__meta_consul_address']
+          regex:         '(.*)'
+          target_label:  'instance'
+          replacement:   '$1'
+        - source_labels: ['__meta_consul_service_address', '__meta_consul_service_port']
+          regex:         '(.*);(.*)'
+          target_label:  '__address__'
+          replacement:   '$1:$2'
+
+
+
+#        - source_labels: ['__meta_consul_tags']
+#          regex:         ',(production|canary|dt-pt-api),'
+#          target_label:  'group'
+#          replacement:   '$1'
+
+#        - source_labels: ['__meta_consul_tags']
+#          regex: ',(?:[^,]+,){0}([^=]+)=([^,]+),.*'
+#          replacement: '${2}'
+#          target_label: '${1}'
+#        - source_labels: ['__meta_consul_tags']
+#          regex: ',(?:[^,]+,){1}([^=]+)=([^,]+),.*'
+#          replacement: '${2}'
+#          target_label: '${1}'
+#        - source_labels: ['__meta_consul_tags']
+#          regex: ',(?:[^,]+,){2}([^=]+)=([^,]+),.*'
+#          replacement: '${2}'
+#          target_label: '${1}'
+#          ===================================================================
+#        - source_labels: [__address__, __meta_kubernetes_service_annotation_example_io_scrape_port]
+#          action: replace
+#          regex: ([^:]+)(?::\d+)?;(\d+)
+#          replacement: $1:$2
+#          target_label: __address__
+#============================================
+#        - source_labels: [__meta_consul_tags]
+#          regex: ',(?:[^,]+,){0}label-([[:alnum:]]+)-([^,]+),.*'
+#          replacement: '${2}'
+#          target_label: '${1}'
+#        - source_labels: [__meta_consul_tags]
+#          regex: ',(?:[^,]+,){1}label-([[:alnum:]]+)-([^,]+),.*'
+#          replacement: '${2}'
+#          target_label: '${1}'
+#        - source_labels: [__meta_consul_tags]
+#          regex: ',(?:[^,]+,){2}label-([[:alnum:]]+)-([^,]+),.*'
+#          replacement: '${2}'
+#          target_label: '${1}'
+#        - source_labels: [__meta_consul_tags]
+#          regex: ',(?:^,]+,){3}-(label-[[:alnum:]]+)-([^,]+),.*'
+#          replacement: '${2}'
+#          target_label: '${1}'
+#        - source_labels: ['__meta_consul_tags']
+#          regex:         ',(dt-pt-api|canary),'
+#          target_label:  'group'
+#          replacement:   '$1'

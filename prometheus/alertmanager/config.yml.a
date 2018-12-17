@@ -1,0 +1,16 @@
+global:
+  slack_api_url: 'https://hooks.slack.com/services/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'
+route:
+    receiver: 'slack'
+#    group_by: [alertname,]
+receivers:
+- name: 'slack'
+  slack_configs:
+  - send_resolved: true
+    username: 'Prometheus'
+    channel: '#dtops-zabbix-monitor'
+    icon_url: https://avatars3.githubusercontent.com/u/3380462
+    title: '{{ template "custom_title" . }}'
+    text: '{{ template "custom_slack_message" . }}'
+templates:
+- 'my.tepl'
