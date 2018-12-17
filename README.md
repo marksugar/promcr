@@ -55,13 +55,17 @@ crul -LK https://raw.githubusercontent.com/marksugar/pcr/master/node_template/do
 ansible pt-api -m copy -a "src=/opt/docker-compose-NAME.yaml dest=/opt/docker-compose.yaml"
 ```
 
-可以在本地编写脚本，在远程节点执行
+可以在本地编写脚本start.sh，在远程节点执行
 
 ```
 #！/bin/bash
 iptables -I INPUT 5 -s IPADDR -p tcp -m tcp -m state --state NEW -m multiport --dports 18880,9100 -j ACCEPT
 sed -i '/-A INPUT -j REJECT/i\\-A INPUT -p tcp -m tcp -m state --state NEW -m multiport --dports 18880,9100 -m comment --comment "prometheus" -j ACCEPT' /etc/sysconfig/iptables
 docker-compose -f /opt/docker-compose.yaml up -d
+```
+
+```
+ansible HOST_GROUP -m script -a "/opt/start.sh"
 ```
 
 ## registrator须知
