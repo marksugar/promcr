@@ -9,8 +9,8 @@ pcr组合了prometheus consul registrator，为了使用起来可以快速部署
   - [registrator须知](#registrator须知)
   - [prometheus须知](#prometheus须知)
   - [grafana须知](#grafana须知)
-  - [alert.rules](#alert.rules)
-  - [alertmanager](alertmanager)
+  - [alert.rules](#alert_rules)
+  - [alertmanager](#alertmanager)
 
 ## 使用说明
 
@@ -120,7 +120,7 @@ exec "$@"
 
 
 ![1218.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/1218.png)
-## alert.rules
+## alert_rules
 主机存活阈值
 ```
 groups:
