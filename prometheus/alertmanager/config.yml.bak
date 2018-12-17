@@ -1,5 +1,5 @@
 global:
-  slack_api_url: 'https://hooks.slack.com/services/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'
+  slack_api_url: ''
 route:
     receiver: 'slack'
 #    group_by: [alertname,]
@@ -11,6 +11,6 @@ receivers:
     channel: '#dtops-zabbix-monitor'
     title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
     text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
- #   api_url: 'https://hooks.slack.com/services/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'
+ #   api_url: ''
 templates:
 - 'my.tepl'

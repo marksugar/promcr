@@ -7,7 +7,7 @@ alerting:
   - scheme: http
     static_configs:
     - targets: 
-      - '172.25.250.249:9093'
+      - '127.0.0.1:9093'
 rule_files:
 scrape_configs:
 
@@ -15,7 +15,7 @@ scrape_configs:
 #    metrics_path: /metrics
 #    scheme: http
 #    static_configs:
-#    - targets: ['172.25.250.249:9090']
+#    - targets: ['127.0.0.1:9090']
 
   - job_name: 'consul_sd'
     metrics_path: /metrics
@@ -83,6 +83,6 @@ scrape_configs:
 #          replacement: '${2}'
 #          target_label: '${1}'
 #        - source_labels: ['__meta_consul_tags']
-#          regex:         ',(dt-pt-api|canary),'
+#          regex:         ',(dti|canary),'
 #          target_label:  'group'
 #          replacement:   '$1'

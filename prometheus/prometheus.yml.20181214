@@ -7,7 +7,7 @@ alerting:
   - scheme: http
     static_configs:
     - targets: 
-      - '172.25.250.249:9093'
+      - '127.0.0.1:9093'
 rule_files:
 
 scrape_configs:

@@ -20,7 +20,7 @@ services:
     ports:
       - 9100:9100
     labels:
-      SERVICE_TAGS: ddt-pt-api
+      SERVICE_TAGS: api
 
   cadvisor:
     image: google/cadvisor:v0.32.0
@@ -38,7 +38,7 @@ services:
     ports:
       - 18880:18880
     labels:
-      SERVICE_TAGS: ddt-pt-api
+      SERVICE_TAGS: api
 
   registrator:
     container_name: registrator
@@ -54,10 +54,10 @@ services:
     environment:
     - REGISTRATOR_BIND_INTERFACE=eth0
     - NETWORK_DEVIDE=eth0 
-    - NDIPSERVER_IP=172.25.250.249
+    - NDIPSERVER_IP=CONSUL_SERVER
     - ND_CMD=-internal=false -retry-interval=30 -resync=180
     labels:
-      SERVICE_TAGS: ddt-pt-api
+      SERVICE_TAGS: api
     logging:
       driver: "json-file"
       options:

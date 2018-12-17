@@ -7,7 +7,7 @@ alerting:
   - scheme: http
     static_configs:
     - targets:
-      - '172.25.250.249:9093'
+      - '127.0.0.1:9093'
 rule_files:
   - "alert.rules"
 scrape_configs:
@@ -41,7 +41,7 @@ scrape_configs:
           replacement:   '$1:$2'
 
         - source_labels: ['__meta_consul_tags']
-          regex:         ',(dt-pt-api|ddt-pt-api|prometheus|ddt-mn-jdc|ddt-mn-app),'
+          regex:         ',(prometheus|app),'
           target_label:  'group'
           replacement:   '$1'
   - job_name: 'node_exporter'
@@ -65,6 +65,6 @@ scrape_configs:
           replacement:   '$1:$2'
 
         - source_labels: ['__meta_consul_tags']
-          regex:         ',(dt-pt-api|ddt-pt-api|prometheus|ddt-mn-jdc|ddt-mn-app),'
+          regex:         ',(prometheus|app),'
           target_label:  'group'
           replacement:   '$1'
