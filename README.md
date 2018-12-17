@@ -30,7 +30,7 @@ chown 472.472 $(pwd)/grafana_data/
 docker-compose -f ./docker-compose.yaml up -d
 ```
 
-## node 节点部署
+## node节点部署
 
 我们将模板下载到本地
 
