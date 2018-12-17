@@ -9,6 +9,8 @@ pcr组合了prometheus consul registrator，为了使用起来可以快速部署
   - [registrator须知](#registrator须知)
   - [prometheus须知](#prometheus须知)
   - [grafana须知](#grafana须知)
+  - [alert.rules](#alert.rules)
+  - [alertmanager](alertmanager)
 
 ## 使用说明
 
@@ -118,3 +120,90 @@ exec "$@"
 
 
 ![1218.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/1218.png)
+## alert.rules
+主机存活阈值
+```
+groups:
+- name: targets
+  rules:
+  - alert: monitor_service_down
+    expr: up == 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Monitor service non-operational"
+      description: "Service {{ $labels.instance }} is down."
+```
+CPU阈值
+```
+- name: host
+  rules:
+  - alert: high_cpu_load
+    expr: node_load1 > 1.5
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "Server under high load"
+      description: "Docker host is under high load, the avg load 1m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+```
+内存阈值
+```
+  - alert: high_memory_load
+    expr: (sum(node_memory_MemTotal_bytes) - sum(node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) ) / sum(node_memory_MemTotal_bytes) * 100 > 85
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "Server memory is almost full"
+      description: "Docker host memory usage is {{ humanize $value}}%. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+```
+磁盘阈值
+```
+  - alert: high_storage_load
+    expr: (node_filesystem_size_bytes{fstype="aufs"} - node_filesystem_free_bytes{fstype="aufs"}) / node_filesystem_size_bytes{fstype="aufs"}  * 100 > 85
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "Server storage is almost full"
+      description: "Docker host storage usage is {{ humanize $value}}%. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+```
+## alertmanager
+- tepl
+```
+{{ define "slack.my.title" -}}
+    {{- if .CommonAnnotations.summary -}}
+        {{- .CommonAnnotations.summary -}}
+    {{- else -}}
+        {{- with index .Alerts 0 -}}
+            {{- .Annotations.summary -}}
+        {{- end -}}
+    {{- end -}}
+{{- end }}
+{{ define "slack.my.text" -}}
+    {{- if .CommonAnnotations.description -}}
+        {{- .CommonAnnotations.description -}}
+    {{- else -}}
+        {{- range $i, $alert := .Alerts }}
+            {{- "\n" -}} {{- .Annotations.description -}}
+        {{- end -}}
+    {{- end -}}
+{{- end }}
+{{- range $i, $alert := .Alerts -}}
+    {{- if lt $i 10 -}}
+        {{- "\n" -}} {{- index $alert.Annotations "description" -}}
+    {{- end -}}
+{{- end -}}
+```
+config.yml 
+```
+    icon_url: https://avatars3.githubusercontent.com/u/3380462
+    title: '{{ template "slack.my.title" . }}'
+    text: '{{ template "slack.my.text" . }}'
+templates:
+- 'my.tepl'
+```
+
+![1219.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/1219.png)
