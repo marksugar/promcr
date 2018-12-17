@@ -2,7 +2,9 @@
 
 pcr组合了prometheus consul registrator，为了使用起来可以快速部署，使用compose将他们编排在一起使用
 
-![1210.png](https://github.com/marksugar/pcr/blob/master/node_template/1210.png?raw=true)
+![1210.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/1210.png)
+
+
 
 - [使用说明](#使用说明)
   - [node节点部署](#node节点部署)
@@ -116,10 +118,10 @@ exec "$@"
 
 最终展示如下：
 
-![1217.png](https://github.com/marksugar/pcr/blob/master/node_template/1217.png?raw=true)
+![1217.png](https://github.com/marksugar/pcr/blob/master/node_template/images/1217.png?raw=true)
 
 
-![1218.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/1218.png)
+![1218.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/1218.png)
 ## alert_rules
 主机存活阈值
 ```
@@ -206,4 +208,4 @@ templates:
 - 'my.tepl'
 ```
 
-![1219.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/1219.png)
+![1219.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/1219.png)
