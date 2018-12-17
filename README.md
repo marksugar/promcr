@@ -79,7 +79,7 @@ COPY entrypoint.sh /bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 ```
 
-附加了一个脚步来获取ip地址，以及传递一些参数
+附加了一个脚本来获取ip地址，以及传递一些参数
 
 ```
 #!/bin/sh
