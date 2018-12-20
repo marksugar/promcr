@@ -16,15 +16,16 @@ pcr组合了prometheus consul registrator，为了使用起来可以快速部署
 
 版本说明
 
-| Version                    | type          | User ID |
-| -------------------------- | ------------- | ------- |
-| 5.4.1                      | grafana       | 472     |
-| v0.15.3                    | alertmanager  |         |
-| v2.5.0                     | prometheus    | 665534  |
-| v0.16.0                    | node_exporter |         |
-| v0.32.0                    | cadvisor      |         |
-| 1.4.0                      | consul        |         |
-| marksugar/registrator:v7.1 | registrator   |         |
+| Version                    | type          | User ID | port      |
+| -------------------------- | ------------- | ------- | --------- |
+| 5.4.1                      | grafana       | 472     | 3000      |
+| v0.15.3                    | alertmanager  |         | 9093/9094 |
+| v2.5.0                     | prometheus    | 665534  | 9090      |
+| v0.16.0                    | node_exporter |         | 9100      |
+| v0.32.0                    | cadvisor      |         | 18880     |
+| 1.4.0                      | consul        |         | 8500      |
+| marksugar/registrator:v7.1 | registrator   |         |           |
+| 2.0.1-luminous             | ceph_exporter |         | 9128      |
 
 ## 使用说明
 
@@ -71,8 +72,8 @@ ansible pt-api -m copy -a "src=/opt/docker-compose-NAME.yaml dest=/opt/docker-co
 
 ```
 #！/bin/bash
-iptables -I INPUT 5 -s IPADDR -p tcp -m tcp -m state --state NEW -m multiport --dports 18880,9100 -j ACCEPT
-sed -i '/-A INPUT -j REJECT/i\\-A INPUT -p tcp -m tcp -m state --state NEW -m multiport --dports 18880,9100 -m comment --comment "prometheus" -j ACCEPT' /etc/sysconfig/iptables
+iptables -I INPUT 5 -s IPADDR -p tcp -m tcp -m state --state NEW -m multiport --dports 18880,9100,9128 -j ACCEPT
+sed -i '/-A INPUT -j REJECT/i\\-A INPUT -p tcp -m tcp -m state --state NEW -m multiport --dports 18880,9100,9128 -m comment --comment "prometheus" -j ACCEPT' /etc/sysconfig/iptables
 docker-compose -f /opt/docker-compose.yaml up -d
 ```
 
