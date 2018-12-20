@@ -124,17 +124,19 @@ exec "$@"
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
 ```
-so,你需要修改配置文件，如下:
+> so , 如果你想顺利的使用，你必须将此处修改和labels一样
+你需要修改配置文件，如下:
 ```
         - source_labels: ['__meta_consul_tags']
           regex:         ',(prometheus|app),'
           target_label:  'group'
           replacement:   '$1'
 ```
-假如上面填写的是 ddt-linuxea.com，这里也要添加归为一个组 ，如下
+假如我们使用上面填写的是 ddt-linuxea.com，这里也要添加归为一个组 ，如下
 ```
 regex:   ',(prometheus|NAME|ddt-linuxea.com),'	 
 ```
+意思是说，如果匹配到携带有ddt-linuxea.com标签的容器将会归为一个group。此后我们对每个group做区分，划分
 
 ## grafana须知
 
