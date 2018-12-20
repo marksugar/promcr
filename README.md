@@ -124,6 +124,17 @@ exec "$@"
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
 ```
+so,你需要修改配置文件，如下:
+```
+        - source_labels: ['__meta_consul_tags']
+          regex:         ',(prometheus|app),'
+          target_label:  'group'
+          replacement:   '$1'
+```
+假如上面填写的是 ddt-linuxea.com，这里也要添加归为一个组 ，如下
+```
+regex:   ',(prometheus|NAME|ddt-linuxea.com),'	 
+```
 
 ## grafana须知
 
