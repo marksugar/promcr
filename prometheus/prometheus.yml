@@ -69,3 +69,27 @@ scrape_configs:
           regex:         ',(prometheus|app),'
           target_label:  'group'
           replacement:   '$1'
+  - job_name: 'ceph_exporter'
+    metrics_path: /metrics
+    scheme: http
+    consul_sd_configs:
+      - server: 127.0.0.1:8500
+        services: ['ceph_exporter']
+    relabel_configs:
+        - source_labels: ['__meta_consul_service']
+          regex:         '(.*)'
+          target_label:  'job'
+          replacement:   '$1'
+        - source_labels: ['__meta_consul_service_address']
+          regex:         '(.*)'
+          target_label:  'instance'
+          replacement:   '$1'
+        - source_labels: ['__meta_consul_service_address', '__meta_consul_service_port']
+          regex:         '(.*);(.*)'
+          target_label:  '__address__'
+          replacement:   '$1:$2'
+
+        - source_labels: ['__meta_consul_tags']
+          regex:         ',(ceph-cluster|cephfs),'
+          target_label:  'group'
+          replacement:   '$1'          
