@@ -238,37 +238,9 @@ config.yml
 templates:
 - 'my.tepl'
 ```
-<<<<<<< HEAD
-## 资源限制
-如果你使用的是swarm集群，你可以使用粒度更小跟详细的限制，如下：
-```
-    deploy:
-      resources:
-        limits:
-          cpus: '0.15'
-          memory: 50M
-        reservations:
-          cpus: '0.15'
-          memory: 20M  
-```
-如果你不是集群，而是单独的compose，你可以使用两条配置参数，如下：
-```
-    cpus: '0.15'
-    mem_limit: 50M
-```
-每个容器的日志也做了限制，这个限制仅仅是对容器输出有效
-```
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "200M"
-```	  
 
-
-
-=======
->>>>>>> 1d39bed13b27674ef74150cb1fcd48fa78cfa5be
 ![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/124.png)
+
 ## 资源限制
 如果你使用的是swarm集群，你可以使用粒度更小跟详细的限制，如下：
 ```
@@ -293,3 +265,9 @@ templates:
       options:
         max-size: "200M"
 ```
+并且在compose的主配置中修改了资源限制cpu_shares比例
+```
+    cpu_shares: 14
+    mem_limit: 50m
+```
+
