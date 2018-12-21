@@ -238,6 +238,7 @@ config.yml
 templates:
 - 'my.tepl'
 ```
+![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/124.png)
 ## 资源限制
 如果你使用的是swarm集群，你可以使用粒度更小跟详细的限制，如下：
 ```
@@ -262,6 +263,3 @@ templates:
       options:
         max-size: "200M"
 ```
-
-
-![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/124.png)
