@@ -1,4 +1,4 @@
-ÔÚ´Ë´¦µÄcomposeÎÄ¼şÖĞÓĞÌí¼ÓÁËceph£¬ÈçÏÂ£º
+åœ¨æ­¤å¤„çš„composeæ–‡ä»¶ä¸­æœ‰æ·»åŠ äº†cephï¼Œå¦‚ä¸‹ï¼š
 ```
   ceph_exporter:
     container_name: ceph_exporter
@@ -8,15 +8,17 @@
       - /etc/ceph:/etc/ceph
     ports:
       - 9128:9128
-    labels:
-      SERVICE_TAGS: ceph-cluster
     logging:
       driver: "json-file"
       options:
-        max-size: "1G"
+        max-size: "200M"
+    cpus: '0.15'
+    mem_limit: 50M    
+    labels:
+      SERVICE_TAGS: ceph-cluster
 ```
 
-Äã¿ÉÄÜÒ²ĞèÒª½«ÅäÖÃÎÄ¼şĞŞ¸Ä
+ä½ å¯èƒ½ä¹Ÿéœ€è¦å°†é…ç½®æ–‡ä»¶ä¿®æ”¹
 ```
   - job_name: 'ceph_exporter'
     metrics_path: /metrics
@@ -43,5 +45,5 @@
           target_label:  'group'
           replacement:   '$1'
 ```
-ÆäÖĞceph-cluster|cephfsÊÇÈİÆ÷µÄ±êÇ©£¬Ò²¶ÔÓ¦´Ë´¦µÄÄ£°å
+å…¶ä¸­ceph-cluster|cephfsæ˜¯å®¹å™¨çš„æ ‡ç­¾ï¼Œä¹Ÿå¯¹åº”æ­¤å¤„çš„æ¨¡æ¿
 
