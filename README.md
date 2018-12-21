@@ -13,6 +13,7 @@ pcr组合了prometheus consul registrator，为了使用起来可以快速部署
   - [grafana须知](#grafana须知)
   - [alert.rules](#alert_rules)
   - [alertmanager](#alertmanager)
+  - [资源限制](#资源限制)
 
 版本说明
 
@@ -237,5 +238,30 @@ config.yml
 templates:
 - 'my.tepl'
 ```
+## 资源限制
+如果你使用的是swarm集群，你可以使用粒度更小跟详细的限制，如下：
+```
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+          memory: 50M
+        reservations:
+          cpus: '0.15'
+          memory: 20M  
+```
+如果你不是集群，而是单独的compose，你可以使用两条配置参数，如下：
+```
+    cpus: '0.15'
+    mem_limit: 50M
+```
+每个容器的日志也做了限制，这个限制仅仅是对容器输出有效
+```
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"
+```
+
 
 ![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/124.png)
