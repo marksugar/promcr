@@ -9,14 +9,15 @@ alerting:
     - targets:
       - '127.0.0.1:9093'
 rule_files:
-  - "alert.rules"
+  - "alert/host.alert.rules"
+  - "alert/container.alert.rules"
+  - "alert/targets.alert.rules"
 scrape_configs:
   - job_name: prometheus
     scrape_interval: 30s
     static_configs:
     - targets: ['127.0.0.1:9090']
     - targets: ['127.0.0.1:9093']
-    - targets: ['127.0.0.1:8300']
 
   - job_name: 'cadvisor'
     metrics_path: /metrics

@@ -1,4 +1,4 @@
-version: '3'
+version: '2.2'
 
 services:
 
@@ -19,12 +19,21 @@ services:
     restart: unless-stopped
     ports:
       - 9100:9100
+<<<<<<< HEAD
     cpus: '0.15'
     mem_limit: 50M  
     logging:
       driver: "json-file"
       options:
         max-size: "200M"           
+=======
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"
+    cpus: '0.15'
+    mem_limit: 50M    
+>>>>>>> 1d39bed13b27674ef74150cb1fcd48fa78cfa5be
     labels:
       SERVICE_TAGS: ceph-cluster
 
@@ -43,15 +52,24 @@ services:
     restart: unless-stopped
     ports:
       - 18880:18880
+<<<<<<< HEAD
     cpus: '0.15'
     mem_limit: 50M  
     logging:
       driver: "json-file"
       options:
         max-size: "200M"         
+=======
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"
+    cpus: '0.15'
+    mem_limit: 50M    
+>>>>>>> 1d39bed13b27674ef74150cb1fcd48fa78cfa5be
     labels:
       SERVICE_TAGS: ceph-cluster
-
+      
   registrator:
     container_name: registrator
     image: marksugar/registrator:v7.1
@@ -66,6 +84,7 @@ services:
     - NETWORK_DEVIDE=eth0 
     - NDIPSERVER_IP=172.25.250.249
     - ND_CMD=-internal=false -retry-interval=30 -resync=180
+<<<<<<< HEAD
     cpus: '0.15'
     mem_limit: 50M  
     logging:
@@ -75,6 +94,16 @@ services:
     labels:
       SERVICE_TAGS: ceph-cluster
 
+=======
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"
+    cpus: '0.15'
+    mem_limit: 50M    
+    labels:
+      SERVICE_TAGS: ceph-cluster
+>>>>>>> 1d39bed13b27674ef74150cb1fcd48fa78cfa5be
 
   ceph_exporter:
     container_name: ceph_exporter
@@ -84,6 +113,7 @@ services:
       - /etc/ceph:/etc/ceph
     ports:
       - 9128:9128
+<<<<<<< HEAD
     cpus: '0.15'
     mem_limit: 50M  
     logging:
@@ -92,3 +122,13 @@ services:
         max-size: "200M"         
     labels:
       SERVICE_TAGS: ceph-cluster
+=======
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"
+    cpus: '0.15'
+    mem_limit: 50M    
+    labels:
+      SERVICE_TAGS: ceph-cluster
+>>>>>>> 1d39bed13b27674ef74150cb1fcd48fa78cfa5be

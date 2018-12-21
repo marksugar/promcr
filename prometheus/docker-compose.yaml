@@ -1,4 +1,4 @@
-version: '3'
+version: '2.2'
 #volumes:
 #  grafana_data: {}
 services:
@@ -19,11 +19,13 @@ services:
     - ./data:/prometheus:rw  # NOTE: chown 65534:65534 /data/prometheus/
 #    - /usr/share/prometheus/console_libraries:/usr/share/prometheus/console_libraries
     - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    - ./alert.rules:/etc/prometheus/alert.rules
+    - ./alert:/etc/prometheus/alert
+    cpu_shares: 60
+    mem_limit: 2048m
     logging:
       driver: "json-file"
       options:
-        max-size: "1G"
+        max-size: "200M"
     depends_on:
     - consul
     labels:
@@ -44,6 +46,12 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
     restart: unless-stopped
+    cpu_shares: 20
+    mem_limit: 512m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"    
     depends_on:
     - prometheus
     labels:
@@ -61,6 +69,12 @@ services:
     restart: unless-stopped
     expose:
       - 9093
+    cpu_shares: 10
+    mem_limit: 128m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"      
     labels:
       SERVICE_TAGS: prometheus
 
@@ -81,6 +95,12 @@ services:
     restart: unless-stopped
     ports:
       - 9100:9100
+    cpu_shares: 14
+    mem_limit: 50m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"      
     labels:
       - "SERVICE_TAGS=prometheus"
 
@@ -97,6 +117,12 @@ services:
     restart: unless-stopped
     ports:
       - 18880:18880
+    cpu_shares: 14
+    mem_limit: 50m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"      
     labels:
       SERVICE_TAGS: prometheus
 
@@ -108,15 +134,17 @@ services:
       - 8500:8500
 #    command: "agent  -bootstrap -bind=172.25.250.249 -server -data-dir=/tmp/consul"
 #    command: "agent -server -ui -client=0.0.0.0 -dev -node=node0 -bind '{{ GetInterfaceIP \"eth0\" }}' -bootstrap-expect=1 -data-dir=/tmp/consul"
-    command: "agent -server -ui -client=0.0.0.0 -dev -node=node0 -bind '{{ GetInterfaceIP \"eth0\" }}' -bootstrap-expect=1 -data-dir=/tmp/consul"
+    command: "agent -server -ui -client=0.0.0.0 -dev -node=node0 -bind '{{ GetInterfaceIP \"eth0\" }}' -bootstrap-expect=1 -data-dir=/consul/data"
     labels:
       SERVICE_IGNORE: 'true'
     environment:
     - CONSUL_CLIENT_INTERFACE=eth0
+    cpu_shares: 30
+    mem_limit: 1024m
     logging:
       driver: "json-file"
       options:
-        max-size: "1G"
+        max-size: "200M"
     volumes:
       - ./consul/config:/consul/config
       - ./consul/data:/consul/data
@@ -143,9 +171,11 @@ services:
     - NETWORK_DEVIDE=eth0 
     - NDIPSERVER_IP=172.25.250.249
     - ND_CMD=-internal=false -retry-interval=60 -resync=360
-    labels:
-      SERVICE_TAGS: prometheus
+    cpu_shares: 14
+    mem_limit: 50m
     logging:
       driver: "json-file"
       options:
-        max-size: "1G"  
+        max-size: "200M"    
+    labels:
+      SERVICE_TAGS: prometheus

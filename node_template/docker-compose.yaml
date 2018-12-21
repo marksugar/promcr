@@ -48,7 +48,11 @@ services:
       options:
         max-size: "200M"
     cpus: '0.15'
+<<<<<<< HEAD
     mem_limit: 50M       
+=======
+    mem_limit: 50M    
+>>>>>>> 1d39bed13b27674ef74150cb1fcd48fa78cfa5be
     labels:
       SERVICE_TAGS: api
 
@@ -76,6 +80,7 @@ services:
     mem_limit: 50M    
     labels:
       SERVICE_TAGS: api
+<<<<<<< HEAD
 
 #    deploy:
 #      resources:
@@ -85,3 +90,5 @@ services:
 #        reservations:
 #          cpus: '0.15'
 #          memory: 20M        
+=======
+>>>>>>> 1d39bed13b27674ef74150cb1fcd48fa78cfa5be

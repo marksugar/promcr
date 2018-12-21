@@ -1,19 +1,8 @@
 groups:
-- name: targets
-  rules:
-  - alert: monitor_service_down
-    expr: up == 0
-    for: 30s
-    labels:
-      severity: critical
-    annotations:
-      summary: "Monitor service non-operational"
-      description: "Service {{ $labels.instance }} is down."
-
 - name: host
   rules:
   - alert: high_cpu_load
-    expr: node_load1 > 1.5
+    expr: node_load1 > ((count(node_cpu_seconds_total) without (cpu)) * node_load1)
     for: 30s
     labels:
       severity: warning
@@ -39,3 +28,11 @@ groups:
       summary: "Server storage is almost full"
       description: "Docker host storage usage is {{ humanize $value}}%. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
 
+  - alert: DiskWillFillIn4Hours
+    expr: predict_linear(node_filesystem_free{job='node'}[1h], 4*3600) < 0
+    for: 5m
+    labels:
+      severity: page
+    annotations:
+      summary: "Server Disk Will FillIn 4 Hours"
+      description: " {{ $labels.job }} of {{ $labels.instance }} by {{ humanize $value}}% Server Disk Will FillIn 4 Hours"

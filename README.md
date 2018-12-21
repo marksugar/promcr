@@ -125,17 +125,19 @@ exec "$@"
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
 ```
-so,你需要修改配置文件，如下:
+> so , 如果你想顺利的使用，你必须将此处修改和labels一样
+你需要修改配置文件，如下:
 ```
         - source_labels: ['__meta_consul_tags']
           regex:         ',(prometheus|app),'
           target_label:  'group'
           replacement:   '$1'
 ```
-假如上面填写的是 ddt-linuxea.com，这里也要添加归为一个组 ，如下
+假如我们使用上面填写的是 ddt-linuxea.com，这里也要添加归为一个组 ，如下
 ```
 regex:   ',(prometheus|NAME|ddt-linuxea.com),'	 
 ```
+意思是说，如果匹配到携带有ddt-linuxea.com标签的容器将会归为一个group。此后我们对每个group做区分，划分
 
 ## grafana须知
 
@@ -236,6 +238,7 @@ config.yml
 templates:
 - 'my.tepl'
 ```
+<<<<<<< HEAD
 ## 资源限制
 如果你使用的是swarm集群，你可以使用粒度更小跟详细的限制，如下：
 ```
@@ -263,4 +266,30 @@ templates:
 
 
 
+=======
+>>>>>>> 1d39bed13b27674ef74150cb1fcd48fa78cfa5be
 ![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/124.png)
+## 资源限制
+如果你使用的是swarm集群，你可以使用粒度更小跟详细的限制，如下：
+```
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+          memory: 50M
+        reservations:
+          cpus: '0.15'
+          memory: 20M  
+```
+如果你不是集群，而是单独的compose，你可以使用两条配置参数，如下：
+```
+    cpus: '0.15'
+    mem_limit: 50M
+```
+每个容器的日志也做了限制，这个限制仅仅是对容器输出有效
+```
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"
+```

@@ -1,0 +1,20 @@
+groups:
+- name: container
+  rules:
+  - alert: high_cpu_usage_on_container
+    expr: sum(rate(container_cpu_usage_seconds_total{name=~".+"}[1m])) by (name, host) * 100 > 70
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      description: '{{ $labels.name }} is using a LOT of CPU. CPU usage is {{ humanize $value}}%.'
+      summary: 'High CPU usage: CONTAINER ''{{ $labels.name }}'' on ''{{ $labels.host }}'''
+
+  - alert: prometheus_eating_memory
+    expr: sum(container_memory_rss{name=~"prometheus"}) BY (name) > 1.2e+09
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      description: '{{ $labels.name }} is eating up a LOT of memory. Memory consumption of {{ $labels.name }} is at {{ humanize $value}}.'
+      summary: 'High memory usage: CONTAINER ''{{ $labels.name }}'' on ''{{ $labels.instance}}'''
