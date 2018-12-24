@@ -1,6 +1,7 @@
 # pcr
 
 pcr组合了prometheus consul registrator，为了使用起来可以快速部署，使用compose将他们编排在一起使用
+registrator作为node主机上的容器，用于发现容器，而后注入到consul中，prometheus利用consul插件发现registrator注入的容器，这其中可以根据不同的标签进行分组等，大致如下图:
 
 ![1210.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/121.png)
 
