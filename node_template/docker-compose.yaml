@@ -3,7 +3,7 @@ version: '2.2'
 services:
 
   node_exporter:
-    image: prom/node-exporter:v0.17.0
+    image: prom/node-exporter:v0.16.0
     container_name: node_exporter
     user: root
     privileged: true
