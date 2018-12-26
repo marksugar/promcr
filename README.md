@@ -1,6 +1,6 @@
 # promcr
 
-pcr组合了prometheus consul registrator，为了使用起来可以快速部署，使用compose将他们编排在一起使用
+promcr组合了prometheus consul registrator，为了使用起来可以快速部署，使用compose将他们编排在一起使用
 
 registrator作为node主机上的容器，用于发现容器，而后注入到consul中
 
