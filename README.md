@@ -1,4 +1,4 @@
-# pcr
+# promcr
 
 pcr组合了prometheus consul registrator，为了使用起来可以快速部署，使用compose将他们编排在一起使用
 
