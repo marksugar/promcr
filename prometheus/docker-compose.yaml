@@ -1,6 +1,4 @@
 version: '2.2'
-#volumes:
-#  grafana_data: {}
 services:
   prometheus:
     image: prom/prometheus:v2.5.0
@@ -15,11 +13,12 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'      
     volumes:
     - ./data:/prometheus:rw  # NOTE: chown 65534:65534 /data/prometheus/
-#    - /usr/share/prometheus/console_libraries:/usr/share/prometheus/console_libraries
     - ./prometheus.yml:/etc/prometheus/prometheus.yml
     - ./alert:/etc/prometheus/alert
+    - ./ssl:/etc/prometheus/ssl    
     cpu_shares: 60
     mem_limit: 2048m
     logging:
@@ -39,8 +38,6 @@ services:
       - ./grafana_data:/var/lib/grafana #NOTE chown 472.472 /data/grafana_data/
       - ./grafana/datasources:/etc/grafana/datasources
       - ./grafana/dashboards:/etc/grafana/dashboards
-#      - /data/grafana/setup.sh:/setup.sh
-#    entrypoint: /setup.sh
     environment:
       - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
@@ -132,8 +129,6 @@ services:
     network_mode: "host"
     ports:
       - 8500:8500
-#    command: "agent  -bootstrap -bind=172.25.250.249 -server -data-dir=/tmp/consul"
-#    command: "agent -server -ui -client=0.0.0.0 -dev -node=node0 -bind '{{ GetInterfaceIP \"eth0\" }}' -bootstrap-expect=1 -data-dir=/tmp/consul"
     command: "agent -server -ui -client=0.0.0.0 -dev -node=node0 -bind '{{ GetInterfaceIP \"eth0\" }}' -bootstrap-expect=1 -data-dir=/consul/data"
     labels:
       SERVICE_IGNORE: 'true'
