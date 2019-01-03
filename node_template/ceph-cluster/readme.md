@@ -47,3 +47,9 @@
 ```
 其中ceph-cluster|cephfs是容器的标签，也对应此处的模板
 
+## deploy
+```
+curl -Lk https://raw.githubusercontent.com/marksugar/promcr/master/node_template/ceph-cluster/docker-compose-ceph.yaml -o /opt/docker-compose.yaml
+docker-compose -f /opt/docker-compose.yaml up -d
+```
+

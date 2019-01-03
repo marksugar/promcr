@@ -1,0 +1,94 @@
+version: '2.2'
+services:
+  etcd:
+    image: marksugar/coreos-etcd:v3.3.10
+    container_name: etcd3
+    restart: always
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - /data/etcd:/data/etcd
+      - /etc/kubernetes/pki/etcd/:/etc/kubernetes/pki/etcd/
+    command: "etcd -name ${PEER_NAME} --data-dir /data/etcd -advertise-client-urls https://${PRIVATE_IP}:2379,https://${PRIVATE_IP}:4001 -listen-client-urls https://0.0.0.0:2379,https://0.0.0.0:4001 -initial-advertise-peer-urls https://${PRIVATE_IP}:2380 -listen-peer-urls https://0.0.0.0:2380 --cert-file=/etc/kubernetes/pki/etcd/server.pem --key-file=/etc/kubernetes/pki/etcd/server-key.pem --client-cert-auth --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem --peer-cert-file=/etc/kubernetes/pki/etcd/peer.pem --peer-key-file=/etc/kubernetes/pki/etcd/peer-key.pem --peer-client-cert-auth --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.pem -initial-cluster-token etcd-cluster -initial-cluster etcd1=https://${etcd0_ip_address}:2380,etcd2=https://${etcd1_ip_address}:2380,etcd3=https://${etcd2_ip_address}:2380 -initial-cluster-state new "
+    cpu_shares: 90
+    mem_limit: 2048m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20M"
+    labels:
+      SERVICE_TAGS: etcd
+
+  node_exporter:
+    image: prom/node-exporter:v0.16.0
+    container_name: node_exporter
+    user: root
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    ports:
+      - 9100:9100
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"
+    cpus: '0.15'
+    mem_limit: 50M    
+    labels:
+      SERVICE_TAGS: etcd
+
+  cadvisor:
+    image: google/cadvisor:v0.32.0
+    container_name: cadvisor
+    privileged: true
+    network_mode: host
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /cgroup:/cgroup:ro
+    command: --listen_ip="0.0.0.0" --port=18880
+    restart: unless-stopped
+    ports:
+      - 18880:18880
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"
+    cpus: '0.15'
+    mem_limit: 50M       
+    labels:
+      SERVICE_TAGS: etcd
+
+  registrator:
+    container_name: registrator
+    image: marksugar/registrator:v7.1
+    network_mode: "host"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    depends_on:
+    - cadvisor
+    - node_exporter
+	- etcd
+    environment:
+    - REGISTRATOR_BIND_INTERFACE=eth0
+    - NETWORK_DEVIDE=eth0 
+    - NDIPSERVER_IP=CONSUL_SERVER
+    - ND_CMD=-internal=false -retry-interval=30 -resync=180
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200M"
+    cpus: '0.15'
+    mem_limit: 50M    
+    labels:
+      SERVICE_TAGS: etcd	  

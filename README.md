@@ -19,6 +19,10 @@ prometheus利用consul插件发现registrator注入的容器，这其中可以�
   - [alertmanager](#alertmanager)
   - [资源限制](#资源限制)
 
+- [exporter]  
+  - [etcd](#etcd)
+  - [ceph](#ceph)
+ 
 版本说明
 
 | Version                    | type          | User ID | port      |
@@ -31,6 +35,7 @@ prometheus利用consul插件发现registrator注入的容器，这其中可以�
 | 1.4.0                      | consul        |         | 8500      |
 | marksugar/registrator:v7.1 | registrator   |         |           |
 | 2.0.1-luminous             | ceph_exporter |         | 9128      |
+| 3.3.10                     | etcd          |         | 2379      |
 
 ## 使用说明
 
@@ -274,4 +279,66 @@ templates:
     cpu_shares: 14
     mem_limit: 50m
 ```
+## etcd
+如果你和我一样，使用的etcd是k8s集群之外的，你可以使用`promcr\grafana_dashboarb\etcd\etcd-external-cn.json`
+- 你必须设置一个标签来完成etcd仪表盘里面的群组，这样的方式在多etcd集群中是有用的。如下：
 
+```
+      labels:
+        group: 'etcd'
+```		
+如果你是集群内的，并且你的标签并不是group，你或许需要修改环境变量来获取值。不过，我准备了俩个仪表盘，没有包含labels group，位于`promcr\grafana_dashboarb\etcd\Etcd-for-k8s-cn.json`
+
+如果你是tls的，记得将证书携带到prometheus中，这里的示例仅仅是k8s集群外的prometheus示例(我并不建议使用自动发现来做)：
+```
+  - job_name: 'etcd'
+    metrics_path: /metrics
+    scheme: https
+    tls_config:
+      cert_file: 'ssl/server.pem'
+      key_file: 'ssl/server-key.pem'
+      insecure_skip_verify: true
+    static_configs:
+    - targets: 
+      - '172.25.50.16:2379'
+      - '172.25.50.17:2379'
+      - '172.25.50.18:2379'
+      labels:
+        group: 'etcd'
+```		
+> 如何得知你的证书是有效的？使用如下命令尝试：
+```
+curl -Lk --cert ./server.pem --key ./server-key.pem  https://IPADDR:2379/metrics
+```
+如果一些正常，你会看到如下，我为你做了一些备注(当然是翻译了^_^)!
+![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/etcd.png)
+## ceph
+ceph的发现规则如下：
+```
+  - job_name: 'ceph_exporter'
+    metrics_path: /metrics
+    scheme: http
+    consul_sd_configs:
+      - server: 127.0.0.1:8500
+        services: ['ceph_exporter']
+    relabel_configs:
+        - source_labels: ['__meta_consul_service']
+          regex:         '(.*)'
+          target_label:  'job'
+          replacement:   '$1'
+        - source_labels: ['__meta_consul_service_address']
+          regex:         '(.*)'
+          target_label:  'instance'
+          replacement:   '$1'
+        - source_labels: ['__meta_consul_service_address', '__meta_consul_service_port']
+          regex:         '(.*);(.*)'
+          target_label:  '__address__'
+          replacement:   '$1:$2'
+
+        - source_labels: ['__meta_consul_tags']
+          regex:         ',(ceph-cluster|cephfs),'
+          target_label:  'group'
+          replacement:   '$1'
+```
+如果__meta_consul_tags等于ceph-cluster就被归为一个组，而后在仪表盘中，我修改了变量，可以将同一个group组合一起。这个仪表盘来自共享
+![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/ceph.png)
