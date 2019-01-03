@@ -19,10 +19,10 @@ prometheus利用consul插件发现registrator注入的容器，这其中可以�
   - [alertmanager](#alertmanager)
   - [资源限制](#资源限制)
 
-- [exporter]  
+- [application](#application)
   - [etcd](#etcd)
   - [ceph](#ceph)
- 
+- [已知问题](#已知问题)
 版本说明
 
 | Version                    | type          | User ID | port      |
@@ -279,6 +279,7 @@ templates:
     cpu_shares: 14
     mem_limit: 50m
 ```
+## application
 ## etcd
 如果你和我一样，使用的etcd是k8s集群之外的，你可以使用`promcr\grafana_dashboarb\etcd\etcd-external-cn.json`
 - 你必须设置一个标签来完成etcd仪表盘里面的群组，这样的方式在多etcd集群中是有用的。如下：
@@ -342,3 +343,14 @@ ceph的发现规则如下：
 ```
 如果__meta_consul_tags等于ceph-cluster就被归为一个组，而后在仪表盘中，我修改了变量，可以将同一个group组合一起。这个仪表盘来自共享
 ![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/ceph.png)
+
+## 已知问题
+在自动发现中，有的机器已经失效，且consul不存在，但是在prometheus中仍然存在，并且送达警告。
+可以通过curl进行删除
+```
+curl -X "DELETE" "http://127.0.0.1:9090/api/v1/series?match[]={job="your job"}"
+curl -X POST -g 'http://localhost:9090/api/v1/admin/tsdb/delete_series?match[]={instance="172.25.50.10"}'
+curl -X POST 127.0.0.1:9090/api/v1/admin/tsdb/delete_series?match[]={instance="172.25.50.10"}
+curl -X POST -g 'http://localhost:9090/api/v1/admin/tsdb/delete_series?match[]={job="ceph_exporter"}'
+curl -X POST -g 'http://localhost:9090/api/v1/admin/tsdb/delete_series?match[]={instance="192.168.0.1:9100"}'
+```
