@@ -314,6 +314,11 @@ curl -Lk --cert ./server.pem --key ./server-key.pem  https://IPADDR:2379/metrics
 ```
 如果一些正常，你会看到如下，我为你做了一些备注(当然是翻译了^_^)!
 ![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/etcd.png)
+grafana上的仪表盘共享：
+```
+https://grafana.com/dashboards/9593
+https://grafana.com/dashboards/9594
+```
 ## ceph
 ceph的发现规则如下：
 ```
