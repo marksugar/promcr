@@ -1,4 +1,40 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "5.4.1"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": "5.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "5.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "singlestat",
+      "name": "Singlestat",
+      "version": "5.0.0"
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -16,8 +52,8 @@
   "editable": true,
   "gnetId": 3070,
   "graphTooltip": 0,
-  "id": 39,
-  "iteration": 1546521344058,
+  "id": null,
+  "iteration": 1546564884743,
   "links": [
     {
       "icon": "dashboard",
@@ -40,7 +76,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "has_leader表示该成员是否具有leader 。如果某个成员没有leader ，则完全无法使用。如果群集中的所有成员都没有任何leader ，则整个群集完全不可用。",
       "format": "none",
       "gauge": {
@@ -102,19 +138,19 @@
         }
       ],
       "thresholds": "0,1",
-      "title": "Etcd leader 存在",
+      "title": "Etcd leader 状态",
       "transparent": false,
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
           "op": "=",
-          "text": "YES",
+          "text": "健康",
           "value": "1"
         },
         {
           "op": "=",
-          "text": "NO",
+          "text": "故障",
           "value": "0"
         }
       ],
@@ -213,7 +249,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "proposals_committed_total记录已提交的共识提案的总数。如果群集健康，该指标应随时间增加。etcd集群的几个健康成员可能同时拥有不同的总承诺提议。这种差异可能是由于在开始后从同伴中恢复，落后于领导者，或者是领导者并因此具有最多的提交。在集群中的所有成员上监控此度量标准非常重要; 单个成员与其领导者之间的持续大滞后表明成员缓慢或不健康。",
       "format": "none",
       "gauge": {
@@ -798,7 +834,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "unary 是单一请求，单一响应RPC\nclient_stream 是一个多请求，单响应RPC\nserver_stream 是单个请求，多响应RPC\nbidi_stream 是一个多请求，多响应RPC",
       "editable": true,
       "error": false,
@@ -1166,7 +1202,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "高磁盘操作延迟（wal_fsync_duration_seconds或backend_commit_duration_seconds）通常表示磁盘问题。它可能会导致高请求延迟或使群集不稳定。",
       "fill": 1,
       "gridPos": {
@@ -1259,7 +1295,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "一个wal_fsync被称为当ETCD应用之前仍然存在，它的日志条目到磁盘。\n\n一个backend_commit当ETCD提交的其最近的更改到磁盘的增量快照被调用。\n\n高磁盘操作延迟（wal_fsync_duration_seconds或backend_commit_duration_seconds）通常表示磁盘问题。它可能会导致高请求延迟或使群集不稳定。",
       "fill": 1,
       "gridPos": {
@@ -1368,7 +1404,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -1542,7 +1578,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Watch事件:\t观看Watch发生的事件或发生的事件。输入和输出都是流; 输入流用于创建和取消观察者，输出流发送事件。一个WatchRPC可以同时监视多个键范围，多个Watch的流媒体事件。可以从最后一次压缩修订开始观察整个事件历史记录。",
       "editable": true,
       "error": false,
@@ -1642,7 +1678,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fill": 5,
@@ -1739,7 +1775,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "peer_sent_failures_total\t来自具有ID的对等方的发送失败总数To。\npeer_received_failures_total\t来自具有ID的对等体的接收失败总数From",
       "editable": true,
       "error": false,
@@ -1838,7 +1874,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "decimals": null,
       "description": "peer_sent_bytes_total计算发送到特定对等方的总字节数。通常，领导成员发送的数据多于其他成员，因为它负责传输复制的数据。",
       "editable": true,
@@ -1931,7 +1967,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "peer_received_bytes_total计算从特定对等方接收的总字节数。通常，关注成员仅从领导成员接收数据。",
       "editable": true,
       "error": false,
@@ -2022,7 +2058,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "editable": true,
       "error": false,
       "fill": 0,
@@ -2282,7 +2318,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "description": "Abnormally high snapshot duration (snapshot_save_total_duration_seconds) indicates disk issues and might cause the cluster to be unstable.",
       "fill": 1,
       "gridPos": {
@@ -2446,26 +2482,17 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "etcd1",
-          "value": "etcd1"
-        },
-        "datasource": "Prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(etcd_server_id,group)",
         "hide": 0,
         "includeAll": false,
         "label": "group",
         "multi": false,
         "name": "group",
-        "options": [
-          {
-            "selected": true,
-            "text": "etcd1",
-            "value": "etcd1"
-          }
-        ],
+        "options": [],
         "query": "label_values(etcd_server_id,group)",
-        "refresh": 0,
+        "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
@@ -2477,36 +2504,17 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "etcd1",
-          "value": "etcd1"
-        },
-        "datasource": "Prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(etcd_server_id{group=\"$group\"},instance)",
         "hide": 0,
         "includeAll": false,
         "label": "instance",
         "multi": false,
         "name": "instance",
-        "options": [
-          {
-            "selected": true,
-            "text": "172.25.50.16:2379",
-            "value": "172.25.50.16:2379"
-          },
-          {
-            "selected": false,
-            "text": "172.25.50.17:2379",
-            "value": "172.25.50.17:2379"
-          },
-          {
-            "selected": false,
-            "text": "172.25.50.18:2379",
-            "value": "172.25.50.18:2379"
-          }
-        ],
+        "options": [],
         "query": "label_values(etcd_server_id{group=\"$group\"},instance)",
-        "refresh": 0,
+        "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
@@ -2519,7 +2527,7 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
@@ -2550,5 +2558,5 @@
   "timezone": "browser",
   "title": "etcd-external-cn",
   "uid": "mTemEyyiz",
-  "version": 88
+  "version": 89
 }
