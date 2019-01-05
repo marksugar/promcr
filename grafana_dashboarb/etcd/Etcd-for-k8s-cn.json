@@ -53,7 +53,7 @@
   "gnetId": 3070,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1546567843145,
+  "iteration": 1546598164659,
   "links": [
     {
       "icon": "external link",
@@ -2092,10 +2092,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "process_resident_memory_bytes{group=\"$group\"}",
+          "expr": "sum(process_resident_memory_bytes{job='$job'}) by (instance)",
           "format": "time_series",
           "intervalFactor": 2,
-          "legendFormat": "{{instance}} Resident Memory",
+          "legendFormat": "{{instance}} ",
           "metric": "process_resident_memory_bytes",
           "refId": "A",
           "step": 120
@@ -2181,7 +2181,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "max(process_max_fds{group=\"$group\"}) by (instance)",
+          "expr": "max(process_max_fds{job=\"$job\"}) by (instance)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{ instance }}",
@@ -2265,7 +2265,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "max(process_open_fds{group=\"$group\"}) by (instance)",
+          "expr": "max(process_open_fds{job=\"$job\"}) by (instance)",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{ instance}}",
@@ -2479,6 +2479,28 @@
         "refresh": 2,
         "skipUrlSync": false,
         "type": "interval"
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
+        "definition": "label_values(etcd_server_is_leader,job)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "job",
+        "multi": false,
+        "name": "job",
+        "options": [],
+        "query": "label_values(etcd_server_is_leader,job)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
@@ -2514,5 +2536,5 @@
   "timezone": "browser",
   "title": "Etcd-for-k8s-cn",
   "uid": "mTemEyyizz",
-  "version": 24
+  "version": 34
 }

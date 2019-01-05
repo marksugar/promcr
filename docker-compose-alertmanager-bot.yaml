@@ -1,0 +1,16 @@
+version: '2.2'
+services:   
+  alertmanager-bot:
+    container_name: alertmanager-bot
+    image: metalmatze/alertmanager-bot:0.3.1
+    network_mode: host
+    environment:
+      ALERTMANAGER_URL: http://0.0.0.0:9093
+      BOLT_PATH: /data/bot.db
+      STORE: bolt
+      TELEGRAM_ADMIN: 'telegram id号码'  # @userinfobot 获取
+      TELEGRAM_TOKEN: # @BotFather 获取
+      TEMPLATE_PATHS: /templates/default.tmpl
+      LISTEN_ADDR: 0.0.0.0:8080
+    volumes:
+    - /srv/monitoring/alertmanager-bot:/data  

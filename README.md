@@ -15,8 +15,10 @@ prometheus利用consul插件发现registrator注入的容器，这其中可以�
   - [registrator须知](#registrator须知)
   - [prometheus须知](#prometheus须知)
   - [grafana须知](#grafana须知)
-  - [alert.rules](#alert_rules)
+  - [alert.rules](#alert_rules) 
   - [alertmanager](#alertmanager)
+    - [slack](#slack)
+	- [Telegram](#Telegram)
   - [资源限制](#资源限制)
 
 - [application](#application)
@@ -37,6 +39,8 @@ prometheus利用consul插件发现registrator注入的容器，这其中可以�
 | marksugar/registrator:v7.1 | registrator   |         |           |
 | 2.0.1-luminous             | ceph_exporter |         | 9128      |
 | 3.3.10                     | etcd          |         | 2379      |
+| 0.3.1                      | Telegram-alarm|         | 8080      |
+| none                       | slack-alarm   |         | none      |
 
 ## 使用说明
 
@@ -214,6 +218,11 @@ CPU阈值
       description: "Docker host storage usage is {{ humanize $value}}%. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
 ```
 ## alertmanager
+
+### slack
+
+这里有两个模板可以用，差别并不大
+
 - tepl
 ```
 {{ define "slack.my.title" -}}
@@ -242,6 +251,17 @@ CPU阈值
 ```
 config.yml 
 ```
+global:
+  slack_api_url: 'https://hooks.slack.com/services/<ID>'
+route:
+    receiver: 'slack'
+#    group_by: [alertname,]
+receivers:
+- name: 'slack'
+  slack_configs:
+  - send_resolved: true
+    username: 'Prometheus'
+    channel: '# < SLACK >'
     icon_url: https://avatars3.githubusercontent.com/u/3380462
     title: '{{ template "slack.my.title" . }}'
     text: '{{ template "slack.my.text" . }}'
@@ -251,7 +271,44 @@ templates:
 
 ![124.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/124.png)
 
+### Telegram
+
+Telegram使用的是[alertmanager-bot](https://github.com/metalmatze/alertmanager-bot)，经过测试，非常好用，可以通过输入指令查看告警，并且可以手动关闭
+
+![Telegram.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/Telegram.png)
+![Telegram-1.png](https://raw.githubusercontent.com/marksugar/pcr/master/node_template/images/Telegram-1.png)
+- compose如下：
+
+```
+version: '2.2'
+services:   
+  alertmanager-bot:
+    container_name: alertmanager-bot
+    image: metalmatze/alertmanager-bot:0.3.1
+    network_mode: host
+    environment:
+      ALERTMANAGER_URL: http://0.0.0.0:9093
+      BOLT_PATH: /data/bot.db
+      STORE: bolt
+      TELEGRAM_ADMIN: 'telegram id号码'  # @userinfobot 获取
+      TELEGRAM_TOKEN: # @BotFather 获取
+      TEMPLATE_PATHS: /templates/default.tmpl
+      LISTEN_ADDR: 0.0.0.0:8080
+    volumes:
+    - /srv/monitoring/alertmanager-bot:/data  
+```
+配置文件也要修改
+```
+route:
+    receiver: 'telegram'
+receivers:
+- name: 'telegram'
+  webhook_configs:
+  - send_resolved: true
+    url: 'http://0.0.0.0:8080'
+```
 ## 资源限制
+
 如果你使用的是swarm集群，你可以使用粒度更小跟详细的限制，如下：
 ```
     deploy:
@@ -288,7 +345,7 @@ templates:
 ```
       labels:
         group: 'etcd'
-```		
+```
 如果你是集群内的，并且你的标签并不是group，你或许需要修改环境变量来获取值。不过，我准备了俩个仪表盘，没有包含labels group，位于`promcr\grafana_dashboarb\etcd\Etcd-for-k8s-cn.json`
 
 如果你是tls的，记得将证书携带到prometheus中，这里的示例仅仅是k8s集群外的prometheus示例(我并不建议使用自动发现来做)：
@@ -307,7 +364,7 @@ templates:
       - '172.25.50.18:2379'
       labels:
         group: 'etcd'
-```		
+```
 > 如何得知你的证书是有效的？使用如下命令尝试：
 ```
 curl -Lk --cert ./server.pem --key ./server-key.pem  https://IPADDR:2379/metrics
